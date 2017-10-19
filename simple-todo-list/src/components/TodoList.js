@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
+import {TodoListItem} from './TodoListItem';
+
 import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';
 import {Grid, Row, Col, Form, FormGroup, FormControl} from 'react-bootstrap';
 import {Card, CardHeader, CardText, CardTitle, FlatButton, Checkbox} from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import UndoIcon from 'material-ui/svg-icons/content/undo';
+
 
 export class TodoList extends Component{
     constructor(props){
@@ -15,6 +17,7 @@ export class TodoList extends Component{
             todoListItems:[]
         }
 
+        this.iconRefs = [];
         this.listItemStyles ={};
         this.listItemStyles.checkedStyle = {'textDecoration': 'lineThrough'};
         this.listItemStyles.unCheckedStyle = {'textDecoration': 'none'};
@@ -23,34 +26,29 @@ export class TodoList extends Component{
 
     handleEnterKeyPress = (event) =>{
         if(event.key === 'Enter'){
-            var newItem = <ListItem leftCheckbox={<Checkbox onCheck={this.handleCompletedCheckbox}/>} rightIcon={<div style={{'display':'inline-flex', 'width':'45px'}}><UndoIcon /> <DeleteIcon /></div>}  key={this.state.todoListItems.length + 1} primaryText={this.state.enteredText}/>
+            let idx = this.state.todoListItems.length + 1;
+            var newItem = <ListItem rightIcon={<DeleteIcon onClick={(e) =>{this.handleDeleteButtonClick(idx, event)}}/>} secondaryText={'Created on ' + new Date(Date.now()).toLocaleDateString()}  key={idx} primaryText={this.state.enteredText}/>
             this.state.todoListItems.push(newItem);
             this.setState({todoItems: this.state.todoListItems, enteredText: ''});
         }
     }
-
-    handleCompletedCheckbox = (event, val) =>{
-        if(val === true){
-            this.state.todoListItems.forEach((listItem) =>{
-                if(listItem.checked == true){
-                    console.log(listItem.props)
-                }else{
-                }
-            });
-        }
+    handleDeleteButtonClick = (idx, event) =>{
+        console.log('selected idx is ' + idx);
+        var results = [];
+        this.state.todoListItems.forEach((item) =>{
+            if(item.key.toString() !== idx.toString()){
+                results.push(item);
+            }
+        });
+        this.setState({todoListItems: results});
     }
 
-    handleSaveBtnClick = () =>{
-        var newItem = <ListItem leftCheckbox={<Checkbox />} key={this.state.todoListItems.length + 1} primaryText={this.state.enteredText}/>
-        this.state.todoListItems.push(newItem);
-        this.setState({todoItems: this.state.todoListItems, enteredText: ''});
-    }
 
     render(){
         return(
             <Card style={{'width':'50%', 'marginLeft': '25%', 'marginTop': '5%'}}>
                 <CardHeader>
-                    <h4>{this.state.todoListItems.length + ' Tasks'}</h4>
+                    <h4>{this.state.todoListItems.length + ' Tasks Created'}</h4>
                 </CardHeader>
                 <CardText>
                 <Grid fluid>
