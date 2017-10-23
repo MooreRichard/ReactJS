@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import {TodoListItem} from './TodoListItem';
 
 import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';
@@ -9,6 +8,8 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 
 
 export class TodoList extends Component{
+    
+    listItemStyles = {};
     constructor(props){
         super(props);
 
@@ -16,9 +17,7 @@ export class TodoList extends Component{
             enteredText: '',
             todoListItems:[]
         }
-
-        this.iconRefs = [];
-        this.listItemStyles ={};
+        
         this.listItemStyles.checkedStyle = {'textDecoration': 'lineThrough'};
         this.listItemStyles.unCheckedStyle = {'textDecoration': 'none'};
         
@@ -27,14 +26,25 @@ export class TodoList extends Component{
     handleEnterKeyPress = (event) =>{
         if(event.key === 'Enter'){
             let idx = this.state.todoListItems.length + 1;
-            var newItem = <ListItem rightIcon={<DeleteIcon onClick={(e) =>{this.handleDeleteButtonClick(idx, event)}}/>} secondaryText={'Created on ' + new Date(Date.now()).toLocaleDateString()}  key={idx} primaryText={this.state.enteredText}/>
+            let newItem = <ListItem style={this.listItemStyles.unCheckedStyle} onClick={(e) =>{this.handleCompletedClick(e,idx, event)}} rightIconButton={<DeleteIcon onClick={(e) =>{this.handleDeleteButtonClick(idx, event)}}/>} secondaryText={'Created on ' + new Date(Date.now()).toLocaleDateString()}  key={idx} primaryText={this.state.enteredText}/>
             this.state.todoListItems.push(newItem);
             this.setState({todoItems: this.state.todoListItems, enteredText: ''});
         }
     }
+
+    handleCompletedClick = (e, idx, event) =>{
+        this.state.todoListItems.forEach((item)=>{
+            if(item.key.toString() === idx.toString()){
+                console.log('found matching id: ' + idx.toString())
+            }
+        })
+
+    }
+
+
     handleDeleteButtonClick = (idx, event) =>{
         console.log('selected idx is ' + idx);
-        var results = [];
+        let results = [];
         this.state.todoListItems.forEach((item) =>{
             if(item.key.toString() !== idx.toString()){
                 results.push(item);
@@ -55,7 +65,6 @@ export class TodoList extends Component{
                     <Row>
                         <Col sm={12} md={12} lg={12}>
                             <TextField style={{'width':'100%'}} hintText="Enter your task and press enter to save it."  value={this.state.enteredText} onKeyPress={this.handleEnterKeyPress} onChange={(e, val) =>{ this.setState({enteredText: val})}}/>
-                            {/* <FlatButton style={{'width':'20%'}} label="Save Task" onClick={this.handleSaveBtnClick}/> */}
                         </Col>
                     </Row>
                     <Row>
